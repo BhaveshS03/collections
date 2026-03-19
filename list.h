@@ -41,6 +41,10 @@ static int init(List *l) {
     }
     return 1;
 }
+static int get_length(List *l){
+    if (!l) return 0;
+    return l->size;
+}
 
 /* frees contents */
 static void free_list(List *l);
@@ -102,7 +106,6 @@ static int append(List *l, Node n) {
     return 1;
 }
 
-/* O(1) access */
 static Node *get(List *l, size_t i) {
     if (!l || i >= l->size) return NULL;
     return &l->data[i];
@@ -155,6 +158,32 @@ static void list_foreach(List *l, visit_fn fn, VisitMode mode) {
             fn(n);
         }
     }
+}
+
+static List* list_slice(List *l, int start, int end){
+    if (!l) return NULL;
+    size_t lo = (start <= 0) ? 0u : (size_t)start;
+    size_t hi = (end   <= 0) ? 0u : (size_t)end;
+
+    if (lo > l->size) return NULL;
+    if (hi > l->size) return NULL;
+    if (lo > hi) return NULL;
+
+    size_t count = hi - lo;
+
+    List *slice = (List *)malloc(sizeof(List));
+    if (!slice) return NULL;
+
+    slice->size = count;
+    slice->capacity = count;
+    slice->data = (count == 0) ? NULL : (Node *) malloc(count * sizeof(Node));
+    if(count && !slice->data){
+        free(slice); return NULL;
+    }
+    if (count) {
+        memcpy(slice->data, &l->data[lo], count * sizeof(Node));
+    }
+    return slice;
 }
 
 #endif /* LIST_H */

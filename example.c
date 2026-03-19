@@ -18,10 +18,13 @@ int main(){
     append(sub, make_string("C List\n"));
 
     append(&root, make_list(sub));
+    append(&root, make_string("what "));
 
-    list_foreach(&root, print, VISIT_LEAF);
-
-
+    Node *x = get(&root, 1);
+    Node *y = get(x->list,1);
+    char* str = y->str;
+    str[0] = "qsa";
+    print(get(x->list,1));
     free_list(&root);
     return 0;
 }
